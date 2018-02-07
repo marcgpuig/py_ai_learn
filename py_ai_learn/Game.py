@@ -1,3 +1,8 @@
+'''
+Main Game file
+'''
+
+
 class Board(object):
     """docstring for Board"""
 
@@ -18,34 +23,40 @@ class Board(object):
         self.board = [[' ' for _ in range(3)] for _ in range(3)]
 
     @staticmethod
-    def pos_in_board_bounds(x, y):
+    def pos_is_in_board(pos_x, pos_y):
         '''Validates a board position'''
-        return x < 3 and x >= 0 and y < 3 and y >= 0
+        return pos_x < 3 and pos_x >= 0 and pos_y < 3 and pos_y >= 0
 
-    def set_value(self, x, y, value):
+    def empty_cell(self, pos_x, pos_y):
+        '''Return true if an specific cell is empty'''
+        return self.board[pos_y][pos_x] == ' '
+
+    def set_value(self, pos_x, pos_y, value):
         '''Set a board cell and return true if completes the game'''
-        if self.pos_in_board_bounds(x, y) and self.board[y][x] == ' ':
-            self.board[y][x] = value
-            return self.column_complete(x) or \
-                self.row_complete(y) or \
+        if self.pos_is_in_board(pos_x, pos_y) and self.empty_cell(pos_x, pos_y):
+            self.board[pos_y][pos_x] = value
+            return self.column_complete(pos_x) or \
+                self.row_complete(pos_y) or \
                 self.diagonal_complete()
         return False
 
-    def set_x(self, x, y):
+    def set_x(self, pos_x, pos_y):
         '''Puts a X on a certain cell'''
-        return self.set_value(x, y, 'X')
+        return self.set_value(pos_x, pos_y, 'X')
 
-    def set_o(self, x, y):
+    def set_o(self, pos_x, pos_y):
         '''Puts a O on a certain cell'''
-        return self.set_value(x, y, 'O')
+        return self.set_value(pos_x, pos_y, 'O')
 
-    def row_complete(self, y):
+    def row_complete(self, pos_y):
         '''True if the row of position y is complete'''
-        return self.board[y][0] == self.board[y][1] == self.board[y][2] != ' '
+        return self.board[pos_y][0] == \
+            self.board[pos_y][1] == self.board[pos_y][2] != ' '
 
-    def column_complete(self, x):
+    def column_complete(self, pos_x):
         '''True if the column of position x is complete'''
-        return self.board[0][x] == self.board[1][x] == self.board[2][x] != ' '
+        return self.board[0][pos_x] == \
+            self.board[1][pos_x] == self.board[2][pos_x] != ' '
 
     def diagonal_complete(self):
         '''True if one diagonal is complete'''
@@ -82,12 +93,3 @@ class Game(object):
 
     def __str__(self):
         return str(self.board)
-
-b = Board()
-b.set_x(0, 0)
-b.set_x(0, 1)
-b.set_x(0, 2)
-b.set_o(1, 1)
-b.set_o(1, 2)
-b.set_o(1, 0)
-print b
