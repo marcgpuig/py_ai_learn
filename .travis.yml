@@ -9,3 +9,5 @@ install:
 script:
   - pylint --disable=R,C --rcfile=.pylintrc /py_ai_learn
   - python -m unittest discover test
+notifications:
+  email: false
