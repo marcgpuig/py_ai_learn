@@ -7,6 +7,8 @@ class Board(object):
     """docstring for Board"""
 
     def __init__(self):
+        self.board = []
+        self.game_over = False
         self.clear_board()
 
     def __str__(self):
@@ -14,13 +16,14 @@ class Board(object):
         order = [0, 1, 2, 1, 2, 1, 0]
         return ''.join([rows[i] for i in order]).format(*self.to_1d_array())
 
-    def to_1d_array(self):
-        '''Return a 1D array with the board information'''
-        return [i for j in self.board for i in j]
-
     def clear_board(self):
         '''Empty the board'''
         self.board = [[' ' for _ in range(3)] for _ in range(3)]
+        self.game_over = False
+
+    def to_1d_array(self):
+        '''Return a 1D array with the board information'''
+        return [i for j in self.board for i in j]
 
     @staticmethod
     def pos_is_in_board(pos_x, pos_y):
@@ -33,11 +36,14 @@ class Board(object):
 
     def set_value(self, pos_x, pos_y, value):
         '''Set a board cell and return true if completes the game'''
-        if self.pos_is_in_board(pos_x, pos_y) and self.empty_cell(pos_x, pos_y):
+        if self.pos_is_in_board(pos_x, pos_y) and \
+                self.empty_cell(pos_x, pos_y):
             self.board[pos_y][pos_x] = value
-            return self.column_complete(pos_x) or \
+            if self.column_complete(pos_x) or \
                 self.row_complete(pos_y) or \
-                self.diagonal_complete()
+                self.diagonal_complete():
+                self.game_over = True
+                return True
         return False
 
     def set_x(self, pos_x, pos_y):
@@ -72,24 +78,40 @@ class Player(object):
     """docstring for Player"""
 
     def __init__(self, name):
-        super(Player, self).__init__()
         self.name = name
         self.puntuation = 0
-
-
-class AIPlayer(Player):
-    """docstring for AIPlayer"""
-
-    def __init__(self):
-        super(AIPlayer, self, "AI").__init__()
-
-
-class Game(object):
-    """docstring for Game"""
-
-    def __init__(self):
-        self.player = 0
-        self.board = Board()
+        self.symbol = 'X'
 
     def __str__(self):
-        return str(self.board)
+        return 'Name: {}\nPuntuation:{}\nSymbol:{}'.format(
+            self.name,
+            self.puntuation,
+            self.symbol)
+
+    def reset_puntuation(self):
+        '''Reset the puntuation'''
+        self.puntuation = 0
+
+    def do_turn(self, board, pos_x, pos_y):
+        '''Do the player turn'''
+        if not isinstance(board, Board):
+            return False
+        return board.set_value(pos_x, pos_y, self.symbol)
+
+
+# class AIPlayer(Player):
+#     """docstring for AIPlayer"""
+
+#     def __init__(self):
+#         super(AIPlayer, self, "AI").__init__()
+
+
+# class Game(object):
+#     """docstring for Game"""
+
+#     def __init__(self):
+#         self.player = 0
+#         self.board = Board()
+
+#     def __str__(self):
+#         return str(self.board)
